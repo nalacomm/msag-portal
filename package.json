@@ -1,0 +1,9 @@
+{
+  "name": "msag-portal",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "nodemailer": "^6.9.9",
+    "node-fetch": "^2.7.0"
+  }
+}

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Submit a Request — MSAG Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --yellow: #EDF069;
+      --dark:   #0d0d0e;
+      --dark-2: #141416;
+      --dark-3: #1c1c1f;
+      --text:   #e8e8ea;
+      --muted:  #8a8a94;
+      --border: rgba(255,255,255,0.08);
+      --radius: 12px;
+      --head:   'Lexend Deca', sans-serif;
+      --body:   'Inter', sans-serif;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--dark); color: var(--text); font-family: var(--body); min-height: 100vh; }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(13,13,14,0.94); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-mark  { width: 32px; height: 32px; background: var(--yellow); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: var(--head); font-weight: 700; color: var(--dark); font-size: 14px; }
+    .nav-name  { font-family: var(--head); font-weight: 600; font-size: 0.9rem; color: var(--text); }
+    .nav-sub   { font-size: 0.72rem; color: var(--muted); margin-left: 4px; }
+
+    /* ── Layout ── */
+    .page { max-width: 680px; margin: 0 auto; padding: 60px 24px 100px; }
+    .page-label { font-family: var(--head); font-size: 0.68rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--yellow); margin-bottom: 10px; }
+    .page-title { font-family: var(--head); font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 700; color: #fff; line-height: 1.15; margin-bottom: 10px; }
+    .page-desc  { font-size: 0.92rem; color: var(--muted); line-height: 1.7; margin-bottom: 40px; }
+
+    /* ── Card ── */
+    .card { background: var(--dark-2); border: 1px solid var(--border); border-radius: 16px; padding: 36px; }
+
+    /* ── Form ── */
+    .form-row   { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group.full { grid-column: 1 / -1; }
+    label { display: block; font-size: 0.78rem; font-weight: 500; color: var(--muted); letter-spacing: 0.04em; margin-bottom: 7px; }
+    label span { color: #e05c5c; margin-left: 2px; }
+    input, select, textarea {
+      width: 100%; background: var(--dark-3); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text); font-family: var(--body); font-size: 0.9rem;
+      padding: 11px 14px; outline: none; transition: border-color 0.2s;
+    }
+    input:focus, select:focus, textarea:focus { border-color: rgba(237,240,105,0.5); }
+    select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a8a94' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+    textarea { resize: vertical; min-height: 110px; }
+    input[type="date"] { color-scheme: dark; }
+    ::placeholder { color: #4a4a54; }
+
+    /* Priority pills */
+    .priority-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .priority-pill  { flex: 1; min-width: 80px; }
+    .priority-pill input[type="radio"] { display: none; }
+    .priority-pill label {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--dark-3); cursor: pointer; transition: all 0.18s;
+      font-size: 0.82rem; font-weight: 500; letter-spacing: 0; margin: 0;
+    }
+    .priority-pill input:checked + label { background: rgba(237,240,105,0.12); border-color: rgba(237,240,105,0.4); color: var(--yellow); }
+    .pill-dot { width: 7px; height: 7px; border-radius: 50%; }
+    .pill-normal  .pill-dot { background: #22c55e; }
+    .pill-high    .pill-dot { background: #f59e0b; }
+    .pill-urgent  .pill-dot { background: #ef4444; }
+
+    /* Divider */
+    .form-divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+    /* Submit */
+    .btn-submit {
+      width: 100%; padding: 15px; background: var(--yellow); color: var(--dark);
+      border: none; border-radius: 10px; font-family: var(--head); font-weight: 700;
+      font-size: 0.95rem; cursor: pointer; transition: opacity 0.2s, transform 0.15s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-submit:hover   { opacity: 0.88; }
+    .btn-submit:active  { transform: scale(0.99); }
+    .btn-submit:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-submit svg { width: 16px; height: 16px; }
+
+    /* Messages */
+    .msg { display: none; padding: 12px 16px; border-radius: 8px; font-size: 0.86rem; margin-top: 14px; }
+    .msg.error   { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
+    .msg.success { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); color: #86efac; }
+
+    /* Footer note */
+    .form-note { text-align: center; font-size: 0.78rem; color: var(--muted); margin-top: 18px; line-height: 1.6; }
+
+    /* Info cards */
+    .info-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 32px; }
+    .info-card { background: var(--dark-2); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+    .info-card-label { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+    .info-card-val   { font-family: var(--head); font-size: 1rem; font-weight: 600; color: #fff; }
+    .info-card-sub   { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+    @media (max-width: 600px) {
+      nav { padding: 0 20px; }
+      .page { padding: 40px 16px 80px; }
+      .card { padding: 24px; }
+      .form-row { grid-template-columns: 1fr; }
+      .info-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="https://msagtech.com" class="nav-logo">
+      <div class="nav-mark">M</div>
+      <div>
+        <span class="nav-name">MSAG</span>
+        <span class="nav-sub">Client Portal</span>
+      </div>
+    </a>
+    <span style="font-size:0.75rem;color:var(--muted);">AAMI Marketing Team</span>
+  </nav>
+
+  <main class="page">
+
+    <div class="page-label">Request Portal</div>
+    <h1 class="page-title">Submit a Work Request</h1>
+    <p class="page-desc">Submit your HTML/CSS requests below. All work is completed remotely and fulfilled within your monthly retainer hours. You'll receive a confirmation with a reference number immediately.</p>
+
+    <!-- Retainer info -->
+    <div class="info-row">
+      <div class="info-card">
+        <div class="info-card-label">Monthly Retainer</div>
+        <div class="info-card-val">10 hrs</div>
+        <div class="info-card-sub">$900/month</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">Turnaround</div>
+        <div class="info-card-val">1–2 days</div>
+        <div class="info-card-sub">Standard requests</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">Overages</div>
+        <div class="info-card-val">$100/hr</div>
+        <div class="info-card-sub">Billed separately</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <form id="requestForm">
+
+        <!-- Contact -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Your Name <span>*</span></label>
+            <input type="text" id="name" name="name" placeholder="Jane Smith" required />
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address <span>*</span></label>
+            <input type="email" id="email" name="email" placeholder="jane@aami.org" required />
+          </div>
+        </div>
+
+        <!-- Request type & title -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="request_type">Request Type <span>*</span></label>
+            <select id="request_type" name="request_type" required>
+              <option value="" disabled selected>Select type…</option>
+              <option>Layout update</option>
+              <option>New component / section</option>
+              <option>New page</option>
+              <option>Bug fix</option>
+              <option>Animation / interaction</option>
+              <option>Responsive / mobile fix</option>
+              <option>Content update</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="deadline">Requested Deadline</label>
+            <input type="date" id="deadline" name="deadline" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="title">Request Title <span>*</span></label>
+          <input type="text" id="title" name="title" placeholder="e.g. Update hero banner on homepage" required />
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description <span>*</span></label>
+          <textarea id="description" name="description" placeholder="Describe what you need in as much detail as possible. Include any relevant URLs, references, or design notes." required></textarea>
+        </div>
+
+        <!-- Priority -->
+        <div class="form-group">
+          <label>Priority <span>*</span></label>
+          <div class="priority-group">
+            <div class="priority-pill pill-normal">
+              <input type="radio" name="priority" id="p-normal" value="Normal" checked />
+              <label for="p-normal"><span class="pill-dot"></span> Normal</label>
+            </div>
+            <div class="priority-pill pill-high">
+              <input type="radio" name="priority" id="p-high" value="High" />
+              <label for="p-high"><span class="pill-dot"></span> High</label>
+            </div>
+            <div class="priority-pill pill-urgent">
+              <input type="radio" name="priority" id="p-urgent" value="Urgent" />
+              <label for="p-urgent"><span class="pill-dot"></span> Urgent</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="notes">Additional Notes / Assets</label>
+          <textarea id="notes" name="notes" style="min-height:72px;" placeholder="Links to mockups, Figma files, staging URLs, or any other context…"></textarea>
+        </div>
+
+        <hr class="form-divider" />
+
+        <button type="submit" class="btn-submit" id="submitBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          Submit Request
+        </button>
+
+        <div class="msg" id="msgBox"></div>
+
+      </form>
+    </div>
+
+    <p class="form-note">
+      Requests are reviewed within 1 business day. Hours are tracked in Harvest against your monthly retainer.<br />
+      Meetings and out-of-scope work are billed separately at $100/hr. Questions? <a href="mailto:ed.henderson@msagtech.com" style="color:var(--yellow);">ed.henderson@msagtech.com</a>
+    </p>
+
+  </main>
+
+  <script>
+    const form      = document.getElementById('requestForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const msgBox    = document.getElementById('msgBox');
+
+    function showMsg(type, text) {
+      msgBox.className = `msg ${type}`;
+      msgBox.textContent = text;
+      msgBox.style.display = 'block';
+      msgBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;animation:spin 1s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Submitting…';
+      msgBox.style.display = 'none';
+
+      try {
+        const res  = await fetch('/api/submit-request', { method: 'POST', body: new URLSearchParams(new FormData(form)) });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || 'Submission failed');
+        form.reset();
+        showMsg('success', `✓ Request submitted — Reference: ${json.ref}. Check your email for confirmation.`);
+      } catch(err) {
+        showMsg('error', err.message || 'Something went wrong. Please try again or email ed.henderson@msagtech.com');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Submit Request';
+      }
+    });
+  </script>
+  <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/success", "destination": "/success.html" },
+    { "source": "/api/submit-request", "destination": "/api/submit-request.js" },
+    { "source": "/api/health", "destination": "/api/health.js" }
+  ]
+}
