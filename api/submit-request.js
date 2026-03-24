@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import fetch from 'node-fetch';
 
 // ── helpers ────────────────────────────────────────────────────────────────────
@@ -23,7 +23,7 @@ function parseBody(req) {
 
 // ── Harvest ────────────────────────────────────────────────────────────────────
 
-async function createHarvestTask(taskName, notes) {
+async function createHarvestTask(taskName) {
   const headers = {
     'Authorization': `Bearer ${process.env.HARVEST_ACCESS_TOKEN}`,
     'Harvest-Account-Id': process.env.HARVEST_ACCOUNT_ID,
@@ -57,24 +57,12 @@ async function createHarvestTask(taskName, notes) {
 
 // ── Email ──────────────────────────────────────────────────────────────────────
 
-function buildTransporter() {
-  return nodemailer.createTransport({
-    host: 'smtp.office365.com',
-    port: 587,
-    secure: false,
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-    tls: { ciphers: 'SSLv3' },
-  });
-}
-
-async function sendAdminEmail(transporter, data, ref, taskId) {
+async function sendAdminEmail(resend, data, ref, taskId) {
   const priorityEmoji = { Normal: '🟢', High: '🟡', Urgent: '🔴' };
-  await transporter.sendMail({
-    from: `"MSAG Portal" <${process.env.SMTP_USER}>`,
-    to:   process.env.NOTIFY_EMAIL,
+  await resend.emails.send({
+    from:    'MSAG Portal <requests@portal.msagtech.com>',
+    to:      process.env.NOTIFY_EMAIL,
+    replyTo: data.email,
     subject: `[${ref}] New Request — ${data.title} (${data.priority})`,
     html: `
       <div style="font-family:sans-serif;max-width:600px;margin:0 auto;">
@@ -101,10 +89,11 @@ async function sendAdminEmail(transporter, data, ref, taskId) {
   });
 }
 
-async function sendClientEmail(transporter, data, ref) {
-  await transporter.sendMail({
-    from: `"Ed Henderson — MSAG" <${process.env.SMTP_USER}>`,
-    to:   data.email,
+async function sendClientEmail(resend, data, ref) {
+  await resend.emails.send({
+    from:    'Ed Henderson — MSAG <requests@portal.msagtech.com>',
+    to:      data.email,
+    replyTo: 'ed.henderson@msagtech.com',
     subject: `Request received — ${ref}`,
     html: `
       <div style="font-family:sans-serif;max-width:600px;margin:0 auto;">
@@ -134,7 +123,7 @@ async function sendClientEmail(transporter, data, ref) {
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const required = ['HARVEST_ACCOUNT_ID','HARVEST_ACCESS_TOKEN','HARVEST_PROJECT_ID','SMTP_USER','SMTP_PASS','NOTIFY_EMAIL'];
+  const required = ['HARVEST_ACCOUNT_ID','HARVEST_ACCESS_TOKEN','HARVEST_PROJECT_ID','RESEND_API_KEY','NOTIFY_EMAIL'];
   const missing  = required.filter(k => !process.env[k]);
   if (missing.length) return res.status(500).json({ error: `Missing env vars: ${missing.join(', ')}` });
 
@@ -145,13 +134,14 @@ export default async function handler(req, res) {
     if (!name || !email || !request_type || !title || !description)
       return res.status(400).json({ error: 'Please fill in all required fields.' });
 
-    const ref       = generateRef();
-    const taskName  = `[${ref}] ${title}`;
-    const { taskId } = await createHarvestTask(taskName, description);
-    const transporter = buildTransporter();
+    const ref            = generateRef();
+    const taskName       = `[${ref}] ${title}`;
+    const { taskId }     = await createHarvestTask(taskName);
+    const resend         = new Resend(process.env.RESEND_API_KEY);
+
     await Promise.all([
-      sendAdminEmail(transporter, data, ref, taskId),
-      sendClientEmail(transporter, data, ref),
+      sendAdminEmail(resend, data, ref, taskId),
+      sendClientEmail(resend, data, ref),
     ]);
 
     res.status(200).json({ success: true, ref });
